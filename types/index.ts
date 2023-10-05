@@ -1,5 +1,20 @@
-import {SVGProps} from "react";
+import {ReactElement, SVGProps} from "react";
+import React from "react";
 
 export type IconSvgProps = SVGProps<SVGSVGElement> & {
   size?: number;
 };
+
+export type ChangeEvent = React.ChangeEvent<HTMLInputElement>;
+export type FormEvent = React.FormEvent<HTMLFormElement>;
+
+export type Toast = {
+  title: String;
+  message: String;
+  variant: "shadow" | "border" | "solid";
+  action?: ReactElement | undefined;
+  type: "success" | "error" | "warning" | "normal";
+};
+
+// form types
+export type LoginForm = {email: String, password: String};
