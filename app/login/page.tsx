@@ -42,14 +42,14 @@ export default function LoginPage() {
           action: undefined,
           type: "success",
         });
-        router.push("/books")
+        router.push("/books");
       }
-    } catch (error) {
+    } catch (error: any) {
       console.log(error);
       setLoading(false);
       setToast({
         title: "Login Authentication",
-        message: "Something went wrong!",
+        message: error.response.data.message || "Something went wrong!",
         variant: "solid",
         action: undefined,
         type: "error",
