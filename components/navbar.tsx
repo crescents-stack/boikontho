@@ -1,3 +1,4 @@
+"use client";
 import {
   Navbar as NextUINavbar,
   NavbarContent,
@@ -8,7 +9,6 @@ import {
   NavbarMenuItem,
 } from "@nextui-org/navbar";
 import { Button } from "@nextui-org/button";
-import { Kbd } from "@nextui-org/kbd";
 import { Link } from "@nextui-org/link";
 import { Input } from "@nextui-org/input";
 
@@ -23,13 +23,17 @@ import {
   TwitterIcon,
   GithubIcon,
   DiscordIcon,
-  HeartFilledIcon,
   SearchIcon,
 } from "@/components/icons";
 
 import { Logo } from "@/components/icons";
+import { useUserProvider } from "@/contexts/userprovider";
+import { Avatar, AvatarIcon } from "@nextui-org/react";
+import { useRouter } from "next/navigation";
 
 export const Navbar = () => {
+  const { user, setUser } = useUserProvider();
+  const router = useRouter();
   const searchInput = (
     <Input
       aria-label="Search"
@@ -37,11 +41,6 @@ export const Navbar = () => {
         inputWrapper: "bg-default-100",
         input: "text-sm",
       }}
-      endContent={
-        <Kbd className="hidden lg:inline-block" keys={["command"]}>
-          K
-        </Kbd>
-      }
       labelPlacement="outside"
       placeholder="Search..."
       startContent={
@@ -96,16 +95,26 @@ export const Navbar = () => {
         </NavbarItem>
         <NavbarItem className="hidden lg:flex">{searchInput}</NavbarItem>
         <NavbarItem className="hidden md:flex">
-          <Button
-            as={Link}
-            className="text-sm font-normal"
-            href={"/login"}
-            // startContent={<HeartFilledIcon className="text-danger" />}
-            variant="solid"
-            color="primary"
-          >
-            Login
-          </Button>
+          {user ? (
+            <Avatar
+              icon={<AvatarIcon />}
+              classNames={{
+                base: "bg-gradient-to-br from-blue-400 to-blue-800 cursor-pointer",
+                icon: "text-white",
+              }}
+              onClick={() => router.push("/dashboard/profile")}
+            />
+          ) : (
+            <Button
+              as={Link}
+              className="text-sm font-normal"
+              href={"/login"}
+              variant="solid"
+              color="primary"
+            >
+              Login
+            </Button>
+          )}
         </NavbarItem>
       </NavbarContent>
 

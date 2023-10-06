@@ -7,7 +7,6 @@ import {
   SetStateAction,
   createContext,
   useContext,
-  useEffect,
   useState,
 } from "react";
 
@@ -21,14 +20,6 @@ const ToastContext = createContext<ToastContextState | null>(null);
 
 const ToastProvider = ({ children }: { children: ReactElement }) => {
   const [toast, setToast] = useState<any>(null);
-
-  // useEffect(() => {
-  //   if(toast){
-  //     setTimeout(() => {
-  //       setToast(null);
-  //     }, 5000);
-  //   }
-  // }, [toast])
 
   return (
     <ToastContext.Provider value={{ toast, setToast }}>

@@ -5,6 +5,8 @@ import { EyeFilledIcon } from "@/components/icons/eyefilledicon";
 import { EyeSlashFilledIcon } from "@/components/icons/eyeslashfilledicon";
 import { title } from "@/components/primitives";
 import { useToastProvider } from "@/contexts/toastprovider";
+import { useUserProvider } from "@/contexts/userprovider";
+import PublicRoute from "@/routes/public";
 import { ChangeEvent, FormEvent, LoginForm } from "@/types";
 import { Button } from "@nextui-org/button";
 import { Input } from "@nextui-org/input";
@@ -16,6 +18,7 @@ import { useState } from "react";
 export default function LoginPage() {
   // hooks
   const { setToast } = useToastProvider();
+  const { setUser } = useUserProvider();
   const router = useRouter();
   const [isVisible, setIsVisible] = useState(false);
   const toggleVisibility = () => setIsVisible(!isVisible);
@@ -36,8 +39,27 @@ export default function LoginPage() {
       );
       if (response.status === 200) {
         console.log({ response });
-        setLoading(false);
-        localStorage.setItem("token", response.data.token)
+
+        const token = response.data.token;
+        localStorage.setItem("token", token);
+        (async () => {
+          try {
+            const response = await axios.get(
+              `${process.env.BACKEND_URL}/users/individual`,
+              {
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                },
+              }
+            );
+            console.log(response);
+            if (response.status === 200) {
+              setUser(response.data.user);
+            }
+          } catch (error) {
+            console.log(error);
+          }
+        })();
         setToast({
           title: "Login Authentication",
           message: "Login successful!",
@@ -45,7 +67,8 @@ export default function LoginPage() {
           action: undefined,
           type: "success",
         });
-        router.push("/books");
+        setLoading(false);
+        router.push("/dashboard/profile");
       }
     } catch (error: any) {
       console.log(error);
@@ -88,50 +111,52 @@ export default function LoginPage() {
   };
 
   return (
-    <div>
-      <h1 className={title()}>Login</h1>
-      <form
-        onSubmit={OnSubmitHandler}
-        className="min-w-[300px] mt-10 grid grid-cols-1 gap-5"
-      >
-        <div>
-          <Input
-            type="email"
-            label="Email"
-            name="email"
-            onChange={OnChangeHandler}
-          />
-          <ErrorBar error={formErrors?.email} />
-        </div>
-        <div>
-          <Input
-            type={isVisible ? "text" : "password"}
-            label="Password"
-            name="password"
-            endContent={
-              <button
-                className="focus:outline-none"
-                type="button"
-                onClick={toggleVisibility}
-              >
-                {isVisible ? (
-                  <EyeSlashFilledIcon className="text-2xl text-default-400 pointer-events-none" />
-                ) : (
-                  <EyeFilledIcon className="text-2xl text-default-400 pointer-events-none" />
-                )}
-              </button>
-            }
-            onChange={OnChangeHandler}
-          />
-          <ErrorBar error={formErrors?.password} />
-        </div>
-        <Button color="primary" type="submit" isLoading={loading}>
-          {loading ? "loggin" : "Login"}
-        </Button>
-      </form>
-      <Link href="/register" className="mt-10">
-        Don&apos;t have account? Register now!
-      </Link>
-    </div>
+    <PublicRoute>
+      <div>
+        <h1 className={title()}>Login</h1>
+        <form
+          onSubmit={OnSubmitHandler}
+          className="min-w-[300px] mt-10 grid grid-cols-1 gap-5"
+        >
+          <div>
+            <Input
+              type="email"
+              label="Email"
+              name="email"
+              onChange={OnChangeHandler}
+            />
+            <ErrorBar error={formErrors?.email} />
+          </div>
+          <div>
+            <Input
+              type={isVisible ? "text" : "password"}
+              label="Password"
+              name="password"
+              endContent={
+                <button
+                  className="focus:outline-none"
+                  type="button"
+                  onClick={toggleVisibility}
+                >
+                  {isVisible ? (
+                    <EyeSlashFilledIcon className="text-2xl text-default-400 pointer-events-none" />
+                  ) : (
+                    <EyeFilledIcon className="text-2xl text-default-400 pointer-events-none" />
+                  )}
+                </button>
+              }
+              onChange={OnChangeHandler}
+            />
+            <ErrorBar error={formErrors?.password} />
+          </div>
+          <Button color="primary" type="submit" isLoading={loading}>
+            {loading ? "loggin" : "Login"}
+          </Button>
+        </form>
+        <Link href="/register" className="mt-10">
+          Don&apos;t have account? Register now!
+        </Link>
+      </div>
+    </PublicRoute>
   );
 }
