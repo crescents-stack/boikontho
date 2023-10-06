@@ -5,6 +5,13 @@ export type IconSvgProps = SVGProps<SVGSVGElement> & {
   size?: number;
 };
 
+export type UserType = {
+  _id: any;
+  name: String;
+  email: String;
+  role: String;
+};
+
 export type ChangeEvent = React.ChangeEvent<HTMLInputElement>;
 export type FormEvent = React.FormEvent<HTMLFormElement>;
 

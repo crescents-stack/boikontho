@@ -14,12 +14,12 @@ const Toast = () => {
   };
   return (
     <div
-      className={`fixed top-[100px] right-[50px] transition ease-in-out duration-500 ${
+      className={`z-50 fixed top-[100px] right-[50px] transition ease-in-out duration-500 ${
         toast ? "translate-x-0" : "translate-x-[100vw]"
       }`}
     >
       <div
-        className={`z-50 min-w-[300px] px-5 py-4 rounded-lg grid grid-cols-1 relative ${
+        className={`min-w-[300px] px-5 py-4 rounded-lg grid grid-cols-1 relative ${
           variant === "shadow"
             ? "shadow-lg"
             : variant === "border"
