@@ -18,3 +18,4 @@ export type Toast = {
 
 // form types
 export type LoginForm = {email: String, password: String};
+export type RegisterForm = {email: String, password: String, name: String};
