@@ -5,7 +5,7 @@ import { EyeFilledIcon } from "@/components/icons/eyefilledicon";
 import { EyeSlashFilledIcon } from "@/components/icons/eyeslashfilledicon";
 import { title } from "@/components/primitives";
 import { useToastProvider } from "@/contexts/toastprovider";
-import { ChangeEvent, FormEvent, LoginForm } from "@/types";
+import { ChangeEvent, FormEvent, RegisterForm } from "@/types";
 import { Button } from "@nextui-org/button";
 import { Input } from "@nextui-org/input";
 import { Link } from "@nextui-org/link";
@@ -20,9 +20,10 @@ export default function LoginPage() {
   const [isVisible, setIsVisible] = useState(false);
   const toggleVisibility = () => setIsVisible(!isVisible);
   const [loading, setLoading] = useState(false);
-  const [formInputs, setFormInputs] = useState<LoginForm>({
+  const [formInputs, setFormInputs] = useState<RegisterForm>({
     email: "",
     password: "",
+    name: ""
   });
   const [formErrors, setFormErrors] = useState(formInputs);
 
@@ -31,27 +32,26 @@ export default function LoginPage() {
     setLoading(true);
     try {
       const response = await axios.post(
-        `${process.env.BACKEND_URL}/auth/login`,
+        `${process.env.BACKEND_URL}/auth/register`,
         formInputs
       );
       if (response.status === 200) {
         console.log({ response });
         setLoading(false);
-        localStorage.setItem("token", response.data.token)
         setToast({
-          title: "Login Authentication",
-          message: "Login successful!",
+          title: "Register Authentication",
+          message: "Register successful!",
           variant: "solid",
           action: undefined,
           type: "success",
         });
-        router.push("/books");
+        router.push("/login");
       }
     } catch (error: any) {
       console.log(error);
       setLoading(false);
       setToast({
-        title: "Login Authentication",
+        title: "Register Authentication",
         message: error.response.data.message || "Something went wrong!",
         variant: "solid",
         action: undefined,
@@ -83,17 +83,29 @@ export default function LoginPage() {
     if (!formInputs.password.trim()) {
       errors.password = "Password is required!";
     }
+    if (!formInputs.name.trim()) {
+        errors.name = "Name is required!";
+      }
 
     return errors;
   };
 
   return (
     <div>
-      <h1 className={title()}>Login</h1>
+      <h1 className={title()}>Register</h1>
       <form
         onSubmit={OnSubmitHandler}
         className="min-w-[300px] mt-10 grid grid-cols-1 gap-5"
       >
+        <div>
+          <Input
+            type="text"
+            label="Name"
+            name="name"
+            onChange={OnChangeHandler}
+          />
+          <ErrorBar error={formErrors?.name} />
+        </div>
         <div>
           <Input
             type="email"
@@ -126,11 +138,11 @@ export default function LoginPage() {
           <ErrorBar error={formErrors?.password} />
         </div>
         <Button color="primary" type="submit" isLoading={loading}>
-          {loading ? "loggin" : "Login"}
+          {loading ? "Registering" : "Register"}
         </Button>
       </form>
-      <Link href="/register" className="mt-10">
-        Don&apos;t have account? Register now!
+      <Link href="/login" className="mt-10">
+        Already have account? Login now!
       </Link>
     </div>
   );
