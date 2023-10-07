@@ -19,19 +19,16 @@ import NextLink from "next/link";
 import clsx from "clsx";
 
 import { ThemeSwitch } from "@/components/theme-switch";
-import {
-  GithubIcon,
-  SearchIcon,
-} from "@/components/icons";
+import { GithubIcon, SearchIcon } from "@/components/icons";
 
 import { Logo } from "@/components/icons";
 import { useUserProvider } from "@/contexts/userprovider";
-import { Avatar, AvatarIcon, Badge } from "@nextui-org/react";
+import { Avatar, AvatarIcon } from "@nextui-org/react";
 import { useRouter } from "next/navigation";
-import { CartIcon } from "./icons/carticon";
+import Cart from "./cart";
 
 export const Navbar = () => {
-  const { user, setUser } = useUserProvider();
+  const { user } = useUserProvider();
   const router = useRouter();
   const searchInput = (
     <Input
@@ -75,15 +72,27 @@ export const Navbar = () => {
           ))}
         </ul>
       </NavbarContent>
-
       <NavbarContent
         className="hidden sm:flex basis-1/5 sm:basis-full"
         justify="end"
       >
         <NavbarItem className="hidden sm:flex gap-2">
-          <Badge color="danger" content="1" shape="circle">
-            <CartIcon size={24} />
-          </Badge>
+          {/* <div
+            onClick={() => {
+              console.log("Hello");
+              onOpen();
+            }}
+            className="cursor-pointer"
+          >
+            <Badge
+              color="danger"
+              content={cart ? cart.length : "0"}
+              shape="circle"
+            >
+              <CartIcon size={24} />
+            </Badge>
+          </div> */}
+          <Cart />
           <Link isExternal href={siteConfig.links.github} aria-label="Github">
             <GithubIcon className="text-default-500" />
           </Link>

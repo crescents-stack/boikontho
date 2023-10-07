@@ -9,6 +9,7 @@ import clsx from "clsx";
 import ContextWrapper from "@/contexts/contextwrapper";
 import Toast from "@/components/Toast";
 
+
 export const metadata: Metadata = {
   title: {
     default: siteConfig.name,
@@ -42,6 +43,7 @@ export default function RootLayout({
       >
         <Providers themeProps={{ attribute: "class", defaultTheme: "dark" }}>
           <ContextWrapper>
+          
             <div className="relative flex flex-col h-screen">
               <Toast />
               <Navbar />

@@ -47,6 +47,12 @@ dependencies:
   '@react-stately/data':
     specifier: ^3.10.3
     version: 3.10.3(react@18.2.0)
+  '@stripe/react-stripe-js':
+    specifier: ^2.3.1
+    version: 2.3.1(@stripe/stripe-js@2.1.7)(react-dom@18.2.0)(react@18.2.0)
+  '@stripe/stripe-js':
+    specifier: ^2.1.7
+    version: 2.1.7
   '@types/node':
     specifier: 20.5.7
     version: 20.5.7
@@ -2661,6 +2667,23 @@ packages:
 
   /@rushstack/eslint-patch@1.5.1:
     resolution: {integrity: sha512-6i/8UoL0P5y4leBIGzvkZdS85RDMG9y1ihZzmTZQ5LdHUYmZ7pKFoj8X0236s3lusPs1Fa5HTQUpwI+UfTcmeA==}
+    dev: false
+
+  /@stripe/react-stripe-js@2.3.1(@stripe/stripe-js@2.1.7)(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-vXiwcG2ZjAF4AezjP7DJ8jiwxfCWCen/X2rBhyXaKrfQ7+pwmXhsoUlKRa0eLWioY1oelOQOafauNUiwTwFHgQ==}
+    peerDependencies:
+      '@stripe/stripe-js': ^1.44.1 || ^2.0.0
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0
+      react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
+    dependencies:
+      '@stripe/stripe-js': 2.1.7
+      prop-types: 15.8.1
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
+    dev: false
+
+  /@stripe/stripe-js@2.1.7:
+    resolution: {integrity: sha512-oI620ARpFp5jCXfwIYMxyBJmtTFuAjSA8x3k3JgW1M6cvLmw9XgmNcGNegQWmirpozhFNflxrZEgp10og+6MSA==}
     dev: false
 
   /@swc/helpers@0.4.14:

@@ -14,12 +14,12 @@ export interface CartState {
   cart: any;
   setCart: Dispatch<SetStateAction<any>>;
 }
-const CartContext = createContext<CartState | null>(null);
+const CartContext = createContext<any>([]);
 
 const CartProvider = ({ children }: { children: ReactElement }) => {
-  const [cart, setCart] = useState<any>(null);
+  const [cart, setCart] = useState<any>([]);
   useEffect(() => {
-    if (!cart) {
+    if (!cart.length) {
       const cartInLS = localStorage.getItem("cart");
       if (cartInLS) {
         setCart(JSON.parse(cartInLS));
