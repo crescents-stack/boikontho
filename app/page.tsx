@@ -18,7 +18,7 @@ export default function Home() {
           choice regardless of your buying experience.
         </h1>
         <h2 className={subtitle({ class: "mt-4" })}>
-          Beautiful, fast and modern Reactive library.
+          Beautiful, fast and modern Book library.
         </h2>
       </div>
 
@@ -33,7 +33,7 @@ export default function Home() {
             variant: "shadow",
           })}
         >
-          Most Popular
+          Most Popular Books
         </Link>
         <Link
         //   isExternal
@@ -42,7 +42,7 @@ export default function Home() {
           href={"/books"}
         >
           <GithubIcon size={20} />
-          Visit All Books
+          Source Code
         </Link>
       </div>
     </section>
