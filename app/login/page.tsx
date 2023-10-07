@@ -19,15 +19,15 @@ export default function LoginPage() {
   // hooks
   const { setToast } = useToastProvider();
   const { setUser } = useUserProvider();
-  const router = useRouter();
   const [isVisible, setIsVisible] = useState(false);
-  const toggleVisibility = () => setIsVisible(!isVisible);
   const [loading, setLoading] = useState(false);
   const [formInputs, setFormInputs] = useState<LoginForm>({
     email: "",
     password: "",
   });
   const [formErrors, setFormErrors] = useState(formInputs);
+  const router = useRouter();
+  const toggleVisibility = () => setIsVisible(!isVisible);
 
   // handler functions
   const LoginAPIFetcher = async () => {
@@ -38,8 +38,6 @@ export default function LoginPage() {
         formInputs
       );
       if (response.status === 200) {
-        console.log({ response });
-
         const token = response.data.token;
         localStorage.setItem("token", token);
         (async () => {
@@ -52,7 +50,6 @@ export default function LoginPage() {
                 },
               }
             );
-            console.log(response);
             if (response.status === 200) {
               setUser(response.data.user);
             }

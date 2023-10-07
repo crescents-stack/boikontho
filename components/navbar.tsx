@@ -20,16 +20,15 @@ import clsx from "clsx";
 
 import { ThemeSwitch } from "@/components/theme-switch";
 import {
-  TwitterIcon,
   GithubIcon,
-  DiscordIcon,
   SearchIcon,
 } from "@/components/icons";
 
 import { Logo } from "@/components/icons";
 import { useUserProvider } from "@/contexts/userprovider";
-import { Avatar, AvatarIcon } from "@nextui-org/react";
+import { Avatar, AvatarIcon, Badge } from "@nextui-org/react";
 import { useRouter } from "next/navigation";
+import { CartIcon } from "./icons/carticon";
 
 export const Navbar = () => {
   const { user, setUser } = useUserProvider();
@@ -82,12 +81,9 @@ export const Navbar = () => {
         justify="end"
       >
         <NavbarItem className="hidden sm:flex gap-2">
-          <Link isExternal href={siteConfig.links.twitter} aria-label="Twitter">
-            <TwitterIcon className="text-default-500" />
-          </Link>
-          <Link isExternal href={siteConfig.links.discord} aria-label="Discord">
-            <DiscordIcon className="text-default-500" />
-          </Link>
+          <Badge color="danger" content="1" shape="circle">
+            <CartIcon size={24} />
+          </Badge>
           <Link isExternal href={siteConfig.links.github} aria-label="Github">
             <GithubIcon className="text-default-500" />
           </Link>
