@@ -65,7 +65,12 @@ export default function LoginPage() {
           type: "success",
         });
         setLoading(false);
-        router.push("/dashboard/profile");
+        const fromLocation = localStorage.getItem("from");
+        if (fromLocation) {
+          router.push(fromLocation);
+        } else {
+          router.push("/dashboard/profile");
+        }
       }
     } catch (error: any) {
       console.log(error);

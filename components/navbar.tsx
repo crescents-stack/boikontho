@@ -19,16 +19,13 @@ import NextLink from "next/link";
 import clsx from "clsx";
 
 import { ThemeSwitch } from "@/components/theme-switch";
-import {
-  GithubIcon,
-  SearchIcon,
-} from "@/components/icons";
+import { GithubIcon, SearchIcon } from "@/components/icons";
 
 import { Logo } from "@/components/icons";
 import { useUserProvider } from "@/contexts/userprovider";
-import { Avatar, AvatarIcon, Badge } from "@nextui-org/react";
+import { Avatar, AvatarIcon } from "@nextui-org/react";
 import { useRouter } from "next/navigation";
-import { CartIcon } from "./icons/carticon";
+import Cart from "./cart";
 
 export const Navbar = () => {
   const { user, setUser } = useUserProvider();
@@ -48,6 +45,12 @@ export const Navbar = () => {
       type="search"
     />
   );
+
+  const Logout = () => {
+    localStorage.removeItem("token");
+    setUser(null!);
+    router.push("/login");
+  };
 
   return (
     <NextUINavbar maxWidth="xl" position="sticky">
@@ -75,15 +78,27 @@ export const Navbar = () => {
           ))}
         </ul>
       </NavbarContent>
-
       <NavbarContent
         className="hidden sm:flex basis-1/5 sm:basis-full"
         justify="end"
       >
         <NavbarItem className="hidden sm:flex gap-2">
-          <Badge color="danger" content="1" shape="circle">
-            <CartIcon size={24} />
-          </Badge>
+          {/* <div
+            onClick={() => {
+              console.log("Hello");
+              onOpen();
+            }}
+            className="cursor-pointer"
+          >
+            <Badge
+              color="danger"
+              content={cart ? cart.length : "0"}
+              shape="circle"
+            >
+              <CartIcon size={24} />
+            </Badge>
+          </div> */}
+          <Cart />
           <Link isExternal href={siteConfig.links.github} aria-label="Github">
             <GithubIcon className="text-default-500" />
           </Link>
@@ -92,14 +107,19 @@ export const Navbar = () => {
         <NavbarItem className="hidden lg:flex">{searchInput}</NavbarItem>
         <NavbarItem className="hidden md:flex">
           {user ? (
-            <Avatar
-              icon={<AvatarIcon />}
-              classNames={{
-                base: "bg-gradient-to-br from-blue-400 to-blue-800 cursor-pointer",
-                icon: "text-white",
-              }}
-              onClick={() => router.push("/dashboard/profile")}
-            />
+            <div className="flex items-center justify-end gap-4">
+              <Avatar
+                icon={<AvatarIcon />}
+                classNames={{
+                  base: "bg-gradient-to-br from-blue-400 to-blue-800 cursor-pointer",
+                  icon: "text-white",
+                }}
+                onClick={() => router.push("/dashboard/profile")}
+              />
+              <Button color="danger" onClick={Logout}>
+                Logout
+              </Button>
+            </div>
           ) : (
             <Button
               as={Link}

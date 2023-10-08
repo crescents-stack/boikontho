@@ -4,38 +4,33 @@ import { useCartProvider } from "@/contexts/cartprovider";
 import { BookList } from "@/utils/data";
 import { Button } from "@nextui-org/button";
 import Image from "next/image";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 export default function BooksPage() {
-  const router = useRouter();
-  const pathname = usePathname();
   const { cart, setCart } = useCartProvider();
 
-  const AddToCart = (_id: any) => {
-    if (cart) {
-      if (cart.length === 0) {
-        setCart([_id]);
-        localStorage.setItem("cart", JSON.stringify([_id]));
-      }
-      if (cart?.length > 0) {
-        if (!cart.includes(_id)) {
-          setCart([...cart, _id]);
-          localStorage.setItem("cart", JSON.stringify([...cart, _id]));
+  const AddToCart = (book: any) => {
+    if (cart.length > 0) {
+      if (cart.length > 0) {
+        if (!cart.filter((item: any) => item.id === book.id).length) {
+          setCart([...cart, { ...book, quantity: 1 }]);
+          localStorage.setItem(
+            "cart",
+            JSON.stringify([...cart, { ...book, quantity: 1 }])
+          );
         }
       }
     } else {
-      setCart([_id]);
-      localStorage.setItem("cart", JSON.stringify([_id]));
+      setCart([{ ...book, quantity: 1 }]);
+      localStorage.setItem("cart", JSON.stringify([{ ...book, quantity: 1 }]));
     }
   };
-  const RemoveFromCart = (_id: any) => {
-    if (cart.includes(_id)) {
-      const toSet = [...cart.filter((item: Number) => item !== _id)];
+  const RemoveFromCart = (id: any) => {
+    if (cart.filter((item: any) => item.id === id).length) {
+      const toSet = [...cart.filter((item: any) => item.id !== id)];
       setCart(toSet);
       localStorage.setItem("cart", JSON.stringify(toSet));
     }
   };
-  console.log(cart);
   return (
     <div>
       <div className="inline-block max-w-lg text-center justify-center">
@@ -46,6 +41,12 @@ export default function BooksPage() {
       </div>
       <div className="flex flex-wrap items-center justify-start gap-10 pt-10">
         {BookList.map((item: any) => {
+          const inCart = cart.length
+            ? cart.find((book: any) => book.id === item.id)
+              ? true
+              : false
+            : false;
+          console.log(inCart);
           return (
             <div
               key={item.id}
@@ -62,15 +63,13 @@ export default function BooksPage() {
               <div className="flex justify-between items-end gap-5 w-full">
                 <p>${item.price}</p>{" "}
                 <Button
-                  color={cart?.includes(item.id) ? "default" : "warning"}
+                  color={inCart ? "danger" : "warning"}
                   className="text-white"
-                  onPress={() =>
-                    !cart?.includes(item.id)
-                      ? AddToCart(item.id)
-                      : RemoveFromCart(item.id)
-                  }
+                  onPress={() => {
+                    !inCart ? AddToCart(item) : RemoveFromCart(item.id);
+                  }}
                 >
-                  Add to Cart
+                  {inCart ? "Remove from cart" : "Add to Cart"}
                 </Button>
               </div>
             </div>
