@@ -14,12 +14,21 @@ import {
 import { useCartProvider } from "@/contexts/cartprovider";
 import { CartIcon } from "./icons/carticon";
 import Image from "next/image";
-import { Minus, Plus, Trash } from "lucide-react";
+import {
+  ArrowRightToLine,
+  LucideArrowUpRight,
+  Minus,
+  Plus,
+  Trash,
+} from "lucide-react";
 import CheckoutForm from "./checkoutform";
 
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import axios from "axios";
+import { useUserProvider } from "@/contexts/userprovider";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 const stripePromise = loadStripe("pk_test_qblFNYngBkEdjEZ16jxxoWSM");
 // const options = {
 //   // passing the client secret obtained from the server
@@ -28,8 +37,11 @@ const stripePromise = loadStripe("pk_test_qblFNYngBkEdjEZ16jxxoWSM");
 
 export default function Cart() {
   const { cart, setCart } = useCartProvider();
+  const { user } = useUserProvider();
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [stripeClientSecret, setStripeClientSecret] = useState(null);
+  const [checkout, setCheckout] = useState(false);
+  const pathname = usePathname();
 
   const QuantityManager = (id: Number, IncOrDec: Boolean) => {
     const newCart = [
@@ -106,87 +118,127 @@ export default function Cart() {
       </Badge>
       <Modal size="3xl" isOpen={isOpen} onOpenChange={onOpenChange}>
         <ModalContent>
-          {() => (
+          {(onClose) => (
             <>
               <ModalHeader className="flex flex-col gap-1">
                 Your items in cart and Checkout
               </ModalHeader>
-              <ModalBody>
-                <section className="mb-5">
-                  {cart.length
-                    ? cart.map((item: any) => {
-                        return (
-                          <div
-                            key={item.id}
-                            className="flex flex-wrap items-center justify-between gap-5 pb-3 border-b dark:border-gray-800 mb-3"
-                          >
-                            <div className="flex gap-3">
+              {cart.length ? (
+                <div className="grid grid-cols-1 gap-5">
+                  <ModalBody>
+                    {checkout ? (
+                      <div>
+                        {cart.length ? (
+                          <section className="mb-5">
+                            {user ? (
                               <div>
-                                <Image
-                                  src={`/books${item.image}`}
-                                  alt=""
-                                  height={500}
-                                  width={500}
-                                  className="w-[50px] h-auto rounded-2xl"
-                                />
+                                <div className="flex items-center justify-center gap-10 font-semibold text-primary">
+                                  <p>Total Amount</p>
+                                  <p>${CalculatePrice()}</p>
+                                </div>
+                                <div className="py-10 max-w-[300px] mx-auto">
+                                  {stripeClientSecret ? (
+                                    <Elements
+                                      stripe={stripePromise}
+                                      options={{
+                                        clientSecret: stripeClientSecret,
+                                      }}
+                                    >
+                                      <CheckoutForm />
+                                    </Elements>
+                                  ) : null}
+                                </div>
                               </div>
+                            ) : (
                               <div>
-                                <p className="font-semibold">{item.title}</p>
-                                <p>
-                                  ${item.price} x {item.quantity}
-                                </p>
+                                <Link
+                                  href="/login"
+                                  className="text-pink-600 hover:text-blue-600 flex items-center justify-center w-full"
+                                  onClick={() => {
+                                    localStorage.setItem("from", pathname);
+                                    onClose();
+                                  }}
+                                >
+                                  Please, in order to checkout login first!{" "}
+                                  <LucideArrowUpRight />
+                                </Link>
+                              </div>
+                            )}
+                          </section>
+                        ) : null}
+                      </div>
+                    ) : (
+                      <section className="mb-5">
+                        {cart.map((item: any) => {
+                          return (
+                            <div
+                              key={item.id}
+                              className="flex flex-wrap items-center justify-between gap-5 pb-3 border-b dark:border-gray-800 mb-3"
+                            >
+                              <div className="flex gap-3">
+                                <div>
+                                  <Image
+                                    src={`/books${item.image}`}
+                                    alt=""
+                                    height={500}
+                                    width={500}
+                                    className="w-[50px] h-auto rounded-2xl"
+                                  />
+                                </div>
+                                <div>
+                                  <p className="font-semibold">{item.title}</p>
+                                  <p>
+                                    ${item.price} x {item.quantity}
+                                  </p>
+                                </div>
+                              </div>
+                              <div className="flex items-center justify-end gap-2">
+                                <Button
+                                  isIconOnly
+                                  disabled={item.quantity === 1}
+                                  onPress={() =>
+                                    QuantityManager(item.id, false)
+                                  }
+                                >
+                                  <Minus className="w-5 h-5" />
+                                </Button>
+                                <div className="px-4 text-2xl">
+                                  {item.quantity}
+                                </div>
+                                <Button
+                                  isIconOnly
+                                  color="primary"
+                                  onPress={() => QuantityManager(item.id, true)}
+                                >
+                                  <Plus className="w-5 h-5" />
+                                </Button>
+                                <Button
+                                  isIconOnly
+                                  color="danger"
+                                  onPress={() => RemoveBook(item.id)}
+                                >
+                                  <Trash className="w-5 h-5" />
+                                </Button>
                               </div>
                             </div>
-                            <div className="flex items-center justify-end gap-2">
-                              <Button
-                                isIconOnly
-                                disabled={item.quantity === 1}
-                                onPress={() => QuantityManager(item.id, false)}
-                              >
-                                <Minus className="w-5 h-5" />
-                              </Button>
-                              <div className="px-4 text-2xl">
-                                {item.quantity}
-                              </div>
-                              <Button
-                                isIconOnly
-                                color="primary"
-                                onPress={() => QuantityManager(item.id, true)}
-                              >
-                                <Plus className="w-5 h-5" />
-                              </Button>
-                              <Button
-                                isIconOnly
-                                color="danger"
-                                onPress={() => RemoveBook(item.id)}
-                              >
-                                <Trash className="w-5 h-5" />
-                              </Button>
-                            </div>
-                          </div>
-                        );
-                      })
-                    : "No book added!"}
-                </section>
-                {cart.length ? (
-                  <section className="mb-5">
-                    <div className="flex items-center justify-center gap-10 font-semibold text-primary">
-                      <p>Total Amount</p>
-                      <p>${CalculatePrice()}</p>
-                    </div>
-                    <div className="py-10 max-w-[300px] mx-auto">
-                    {stripeClientSecret ? (
-                      <Elements
-                        stripe={stripePromise}
-                        options={{ clientSecret: stripeClientSecret }}
-                      >
-                        <CheckoutForm />
-                      </Elements>
-                    ) : null}
-                    </div>
-                  </section>
-                ) : null}
-              </ModalBody>
+                          );
+                        })}
+                      </section>
+                    )}
+                  </ModalBody>
+                  <Button
+                    onPress={() => setCheckout(!checkout)}
+                    className="mb-5 max-w-[300px] mx-auto text-white"
+                    color="warning"
+                  >
+                    {checkout ? "Make changes" : "Checkout now"}
+                  </Button>
+                </div>
+              ) : (
+                <div className="p-5 text-pink-600">
+                  No book added!
+                </div>
+              )}
             </>
           )}
         </ModalContent>

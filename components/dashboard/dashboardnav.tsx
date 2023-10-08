@@ -5,21 +5,19 @@ import { useUserProvider } from "@/contexts/userprovider";
 import { Button } from "@nextui-org/button";
 import { Tabs, Tab, Chip } from "@nextui-org/react";
 import { Book, Boxes, Settings, User, Users } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function DashboardNav() {
   const { user, setUser } = useUserProvider();
-  const [selected, setSelected] = useState("profile");
+  const pathname = usePathname();
+  const [selected, setSelected] = useState(
+    pathname?.replace("/dashboard/", "") || "profile"
+  );
   const router = useRouter();
   useEffect(() => {
     router.push(`/dashboard/${selected}`);
   }, [selected]);
-  const Logout = () => {
-    localStorage.removeItem("token");
-    setUser(null!);
-    router.push("/login");
-  };
   return (
     <div className="flex items-center justify-between gap-5 w-full border-b border-divider">
       <div className="flex w-full flex-col">
@@ -78,9 +76,6 @@ export default function DashboardNav() {
               <div className="flex items-center space-x-2">
                 <Boxes />
                 <span>Orders</span>
-                <Chip size="sm" variant="faded">
-                  12
-                </Chip>
               </div>
             }
           />
@@ -95,9 +90,6 @@ export default function DashboardNav() {
           />
         </Tabs>
       </div>
-      <Button color="danger" onClick={Logout}>
-        Logout
-      </Button>
     </div>
   );
 }

@@ -1,13 +1,22 @@
 "use client";
+import { useCartProvider } from "@/contexts/cartprovider";
+import { useToastProvider } from "@/contexts/toastprovider";
+import { useUserProvider } from "@/contexts/userprovider";
 import {
   useStripe,
   useElements,
   PaymentElement,
 } from "@stripe/react-stripe-js";
+import axios from "axios";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 const CheckoutForm = () => {
   const [spinner, setSpinner] = useState(false);
+  const { user } = useUserProvider();
+  const { cart, setCart } = useCartProvider();
+  const { setToast } = useToastProvider();
+  const router = useRouter();
   const stripe = useStripe();
   const elements = useElements();
 
@@ -30,19 +39,69 @@ const CheckoutForm = () => {
       confirmParams: {
         return_url: `${window.location.href}?redirect_status=success`,
       },
-      redirect: "if_required"
+      redirect: "if_required",
     });
+
+    const CreateOrderInDatabase = async (amount) => {
+      const token = localStorage.getItem("token");
+      try {
+        const response = await axios.post(
+          `${process.env.BACKEND_URL}/orders/create`,
+          {
+            userId: user._id,
+            orderItems: cart,
+            totalPrice: amount,
+            shippingAddress: "Bangladesh",
+            paymentMethod: "Credit Card",
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        console.log(response);
+        if (response.status === 200) {
+          setCart([]);
+          localStorage.setItem("cart", [])
+          setToast({
+            title: "Payment Process",
+            message: "Payment successful!",
+            variant: "solid",
+            action: undefined,
+            type: "success",
+          });
+        }
+        router.push("/dashboard/orders");
+        setSpinner(false);
+      } catch (error) {
+        console.log(error);
+        setToast({
+          title: "Payment Process",
+          message: error.response.data.message || "Something went wrong!",
+          variant: "solid",
+          action: undefined,
+          type: "error",
+        });
+        setSpinner(false);
+      }
+    };
 
     if (result.error) {
       // Show error to your customer (for example, payment details incomplete)
       console.log(result.error.message);
+      setToast({
+        title: "Payment Process",
+        message: result.error.message || "Something went wrong!",
+        variant: "solid",
+        action: undefined,
+        type: "error",
+      });
+      setSpinner(false);
     } else {
-      console.log("Payment Succesful!");
-      // Your customer will be redirected to your `return_url`. For some payment
-      // methods like iDEAL, your customer will be redirected to an intermediate
-      // site first to authorize the payment, then redirected to the `return_url`.
+      const { amount } = result.paymentIntent;
+      CreateOrderInDatabase(amount);
     }
-    setSpinner(false);
   };
 
   return (

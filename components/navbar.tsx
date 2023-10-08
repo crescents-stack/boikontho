@@ -28,7 +28,7 @@ import { useRouter } from "next/navigation";
 import Cart from "./cart";
 
 export const Navbar = () => {
-  const { user } = useUserProvider();
+  const { user, setUser } = useUserProvider();
   const router = useRouter();
   const searchInput = (
     <Input
@@ -45,6 +45,12 @@ export const Navbar = () => {
       type="search"
     />
   );
+
+  const Logout = () => {
+    localStorage.removeItem("token");
+    setUser(null!);
+    router.push("/login");
+  };
 
   return (
     <NextUINavbar maxWidth="xl" position="sticky">
@@ -101,14 +107,19 @@ export const Navbar = () => {
         <NavbarItem className="hidden lg:flex">{searchInput}</NavbarItem>
         <NavbarItem className="hidden md:flex">
           {user ? (
-            <Avatar
-              icon={<AvatarIcon />}
-              classNames={{
-                base: "bg-gradient-to-br from-blue-400 to-blue-800 cursor-pointer",
-                icon: "text-white",
-              }}
-              onClick={() => router.push("/dashboard/profile")}
-            />
+            <div className="flex items-center justify-end gap-4">
+              <Avatar
+                icon={<AvatarIcon />}
+                classNames={{
+                  base: "bg-gradient-to-br from-blue-400 to-blue-800 cursor-pointer",
+                  icon: "text-white",
+                }}
+                onClick={() => router.push("/dashboard/profile")}
+              />
+              <Button color="danger" onClick={Logout}>
+                Logout
+              </Button>
+            </div>
           ) : (
             <Button
               as={Link}

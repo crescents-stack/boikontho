@@ -14,9 +14,10 @@ const Toast = () => {
   };
   return (
     <div
-      className={`z-50 fixed top-[100px] right-[50px] transition ease-in-out duration-500 ${
+      className={`fixed top-[100px] right-[50px] transition ease-in-out duration-500 ${
         toast ? "translate-x-0" : "translate-x-[100vw]"
       }`}
+      style={{zIndex: 99999999}}
     >
       <div
         className={`min-w-[300px] px-5 py-4 rounded-lg grid grid-cols-1 relative ${
